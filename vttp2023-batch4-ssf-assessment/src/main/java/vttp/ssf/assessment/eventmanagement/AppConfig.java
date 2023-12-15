@@ -10,6 +10,7 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
@@ -33,8 +34,8 @@ public class AppConfig {
 	@Value("${spring.redis.database}")
 	private Integer redisDatabase;
  
-	@Bean(Utils.BEAN_REDIS)
-	public RedisTemplate<String, String> createRedisConnection() {
+	@Bean
+	public RedisTemplate<String, Object> createRedisConnection() {
 	   // Create a redis configuration
 	   RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
 	   config.setHostName(redisHost);
@@ -47,21 +48,20 @@ public class AppConfig {
 	   }
  
 	   logger.log(Level.INFO, "Using Redis database %d".formatted(redisPort));
-	   logger.log(Level.INFO
-		  , "Using Redis password is set: %b".formatted(redisPassword != "NOT_SET"));
+	   logger.log(Level.INFO, "Using Redis password is set: %b".formatted(redisPassword != "NOT_SET"));
  
-	   JedisClientConfiguration jedisClient = JedisClientConfiguration
-			 .builder().build();
+	   JedisClientConfiguration jedisClient = JedisClientConfiguration.builder().build();
 	   JedisConnectionFactory jedisFac = new JedisConnectionFactory(config, jedisClient);
 	   jedisFac.afterPropertiesSet();
  
-	   RedisTemplate<String, String> template = new RedisTemplate<>();
+	   RedisTemplate<String, Object> template = new RedisTemplate<>();
 	   template.setConnectionFactory(jedisFac);
  
 	   template.setKeySerializer(new StringRedisSerializer());
-	   template.setValueSerializer(new StringRedisSerializer());
-	   template.setHashKeySerializer(new StringRedisSerializer());
-	   template.setHashValueSerializer(new StringRedisSerializer());
+	   template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+	   template.setHashKeySerializer(new GenericJackson2JsonRedisSerializer());
+	   template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+	   template.afterPropertiesSet();
  
 	   return template;
 	}

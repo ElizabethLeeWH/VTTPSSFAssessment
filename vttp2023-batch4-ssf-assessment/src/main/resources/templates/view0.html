@@ -32,6 +32,10 @@
                         <a data-th-href="@{/events/register/{eventId}(eventId=${e.eventId})}" class="btn btn-primary">Register</a>
                     </td>
                 </tr>
+                <tr data-th-each="e: ${events}">
+                    <a data-th-href="@{/events/register}" class="btn btn-primary">Register</a>
+                </tr>
+
             </tbody>
         </table>
     </div>
