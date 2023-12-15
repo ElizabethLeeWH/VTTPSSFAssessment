@@ -25,8 +25,6 @@ public class EventController {
 		model.addAttribute("events", e);
 		return "view0";
 	}
-
-	@GetMapping("/register")
-	public String 
+ 
 
 }
